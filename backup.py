@@ -5,6 +5,9 @@ import logging
 import datetime
 from urllib.parse import urlparse
 import subprocess
+import slackclient
+
+client = slack.WebClient(token='xoxb-919881679474-922523632689-avtN5jmEihuoieHdIRd0cb02')
 
 # setting a log file to log all data
 logging.basicConfig(level=logging.INFO)
@@ -41,7 +44,37 @@ def backup(url):
 	])
 
 	# log the output of the command
+	logging.info(f"Backed up database at {datetime.datetime.now()}")
 	logging.info(execute_backup)
+
+	# set a filename to call the zipped file
+	zipped_name = f"{datetime.datetime.now()}.zip"
+
+	# zip the database backup
+
+	execute_command = subprocess.call([
+		'zip',
+		'-j',
+		zipped_name,
+		f'{output_dir}',
+		# move the zipped file to root directory
+		# so that we can retrieve it easily
+		'cd',
+		'/'
+	])
+
+	logging.info(f"Zipped output directory into {zipped_name}")
+
+	response = client.files_upload(
+		channels="#backups",
+		file=f"/{zipped_name}"
+	)
+
+	assert response['ok'], "Could not send file"
+
+	logging.info(f"Sent backup to slack channel at {datetime.datetime.now()}")
+
+
 
 if __name__ == '__main__':
 	try:
