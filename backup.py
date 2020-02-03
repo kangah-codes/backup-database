@@ -5,7 +5,7 @@ import logging
 import datetime
 from urllib.parse import urlparse
 import subprocess
-import slackclient
+import slack
 
 client = slack.WebClient(token='xoxb-919881679474-922523632689-avtN5jmEihuoieHdIRd0cb02')
 
@@ -28,46 +28,19 @@ def backup(url):
 	logging.info(f"Parsed database url at {datetime.datetime.now()}")
 
 	# set an output directory for the database
-	output_dir = os.path.abspath(os.path.join(os.path.curdir, '/'))
+	# output_file = os.path.abspath(os.path.join(os.path.curdir, '/'))
+	output_file = f'{os.getcwd()}/backup'
 
-	assert os.path.isdir(output_dir), 'Directory does not exist'
+	assert os.path.isdir(output_file), 'Directory does not exist'
 
-	# use subprocess to execute shell command to backup database
-	execute_backup = subprocess.check_output([
-		'mongodump',
-		'-host', f'{hostname}',
-		'-u', f'{username}',
-		'-p', f'{password}',
-		'-d', f'{db}',
-		'--port', f'{port}',
-		'-o', f'{output_dir}'
-	])
+	#use subprocess to execute shell command to backup database
+	os.system(f"mongodump -host {hostname} -u {username} -p {password} -d {db} --port {port} -o {output_file}")
 
 	# log the output of the command
 	logging.info(f"Backed up database at {datetime.datetime.now()}")
-	logging.info(execute_backup)
-
-	# set a filename to call the zipped file
-	zipped_name = f"{datetime.datetime.now()}.zip"
-
-	# zip the database backup
-
-	execute_command = subprocess.call([
-		'zip',
-		'-j',
-		zipped_name,
-		f'{output_dir}',
-		# move the zipped file to root directory
-		# so that we can retrieve it easily
-		'cd',
-		'/'
-	])
-
-	logging.info(f"Zipped output directory into {zipped_name}")
-
 	response = client.files_upload(
 		channels="#backups",
-		file=f"/{zipped_name}"
+		file=f"{os.getcwd()/backup}"
 	)
 
 	assert response['ok'], "Could not send file"
@@ -79,5 +52,6 @@ def backup(url):
 if __name__ == '__main__':
 	try:
 		backup('mongodb://heroku_dczdt2sx:ifhpheh6mkgeh9affb2ttftn52@ds147446.mlab.com:47446/heroku_dczdt2sx')
+		#backup('postgres://postgres:ilovekwame1@127.0.0.1:5432/medic_mall')
 	except AssertionError as e:
 		logging.error(e)
