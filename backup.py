@@ -34,7 +34,7 @@ def backup(url):
 	assert os.path.isdir(output_file), 'Directory does not exist'
 
 	#use subprocess to execute shell command to backup database
-	os.system(f"mongodump -host {hostname} -u {username} -p {password} -d {db} --port {port} -o {output_file}")
+	os.system(f"mongodump --host {hostname} -u {username} -p {password} -d {db} --port {port} -o {output_file}")
 
 	# log the output of the command
 	logging.info(f"Backed up database at {datetime.datetime.now()}")
