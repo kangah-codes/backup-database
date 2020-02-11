@@ -46,7 +46,7 @@ def backup(url):
 	logging.info(f"Backed up database at {datetime.datetime.now()}")
 	response = client.files_upload(
 		channels="#backups",
-		file=f"{os.getcwd()}/{str(zip_name).split(' ')[0]}"
+		file=f"{os.getcwd()}/{str(zip_name).split(' ')[0]}.zip"
 	)
 
 	assert response['ok'], "Could not send file"
