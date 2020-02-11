@@ -31,16 +31,23 @@ def backup(url):
 	# output_file = os.path.abspath(os.path.join(os.path.curdir, '/'))
 	output_file = f'{os.getcwd()}/backup'
 
-	assert os.path.isdir(output_file), 'Directory does not exist'
+	# assert os.path.isdir(output_file), 'Directory does not exist'
 
 	#use subprocess to execute shell command to backup database
 	os.system(f"mongodump --host {hostname} -u {username} -p {password} -d {db} --port {port} -o {output_file}")
+	
+	# compress the backup directory
+	zip_name = datetime.datetime.now()
+	
+	os.system(f"zip -r {zip_name} backup/heroku_dczdt2sx")
+	
+	logging.info(f"Compressed database backup at {datetime.datetime.now()}")
 
 	# log the output of the command
 	logging.info(f"Backed up database at {datetime.datetime.now()}")
 	response = client.files_upload(
 		channels="#backups",
-		file=f"{os.getcwd()}/backup"
+		file=f"{os.getcwd()}/backup/{zip_name}"
 	)
 
 	assert response['ok'], "Could not send file"
