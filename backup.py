@@ -52,6 +52,10 @@ def backup(url):
 	assert response['ok'], "Could not send file"
 
 	logging.info("Sent backup to slack channel")
+		  
+	os.system(f"rm {str(zip_name).split(' ')[0]}.zip")
+		  
+	logging.info("Removed zip file")
 
 
 
