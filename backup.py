@@ -11,7 +11,6 @@ client = slack.WebClient(token='xoxb-919881679474-922523632689-avtN5jmEihuoieHdI
 
 # setting a log file to log all data
 logging.basicConfig(filename='backup.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logging.basicConfig(level=logging.INFO)
 
 def backup(url):
 	database_url = urlparse(url)
@@ -37,9 +36,9 @@ def backup(url):
 	os.system(f"mongodump --host {hostname} -u {username} -p {password} -d {db} --port {port} -o {output_file}")
 	
 	# compress the backup directory
-	zip_name = datetime.datetime.now()
+	zip_name = datetime.datetime.now().today()
 	
-	os.system(f"zip -r {zip_name} backup/heroku_dczdt2sx")
+	os.system(f"zip -r {str(zip_name).split(' ')[0]} backup/heroku_dczdt2sx")
 	
 	logging.info("Compressed database backup")
 
@@ -47,7 +46,7 @@ def backup(url):
 	logging.info(f"Backed up database at {datetime.datetime.now()}")
 	response = client.files_upload(
 		channels="#backups",
-		file=f"{os.getcwd()}/{zip_name}"
+		file=f"{os.getcwd()}/{str(zip_name).split(' ')[0]}"
 	)
 
 	assert response['ok'], "Could not send file"
