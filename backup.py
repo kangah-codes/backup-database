@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 import subprocess
 import slack
 
-client = slack.WebClient(token='xoxb-919881679474-922523632689-avtN5jmEihuoieHdIRd0cb02')
+client = slack.WebClient(token='yourSlackToken')
 
 # setting a log file to log all data
 logging.basicConfig(filename='backup.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -61,6 +61,6 @@ def backup(url):
 
 if __name__ == '__main__':
 	try:
-		backup('mongodb://heroku_dczdt2sx:ifhpheh6mkgeh9affb2ttftn52@ds147446.mlab.com:47446/heroku_dczdt2sx')
+		backup('your_DB_URI')
 	except AssertionError as e:
 		logging.error(e)
